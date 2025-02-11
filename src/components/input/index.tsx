@@ -13,9 +13,10 @@ export function Input({type, placeholder, name, register, rules, error}: IInputP
     return (
         <>
             {error && (
-                <label htmlFor={name} className="px-2 min-h-11 text-red-500">{error}</label>
+                <p className="min-h-11 text-red-500">{error}</p>
             )}
-            <input type={type} placeholder={placeholder} name={name} id={name} {...register(name, rules)} className="w-full border-2 rounded-md h-11 px-2"/>
+            <label htmlFor={name} className="hidden">{name}</label>
+            <input type={type} placeholder={placeholder} name={name} id={name} {...register(name, rules)} className="w-full border-2 border-red-500 rounded-md h-11 px-2"/>
         </>
     )
 }
