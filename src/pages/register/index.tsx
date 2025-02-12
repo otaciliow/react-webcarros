@@ -1,4 +1,5 @@
-import { useEffect } from 'react';
+import { useEffect, useContext } from 'react';
+import { AuthContext } from '../../contexts/authContext';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -20,6 +21,7 @@ const schema = z.object({
 type formData = z.infer<typeof schema>
 
 export function Register() {
+    const { handleInfoUser } = useContext(AuthContext);
     const navigate = useNavigate();
 
     const { register, handleSubmit, formState: {errors} } = useForm<formData>({
@@ -40,7 +42,11 @@ export function Register() {
             await updateProfile(user.user, {
                 displayName: data.name
             })
-
+            handleInfoUser({
+                name: data.name,
+                email: data.email,
+                uid: user.user.uid
+            })
             console.log('Cadastrado com sucesso!');
             navigate('/dashboard', {replace: true});
         })

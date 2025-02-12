@@ -11,6 +11,8 @@ interface IAuthProviderProps {
 type AuthContextData = {
     signed: boolean;
     loadingAuth: boolean;
+    handleInfoUser: ({name, email, uid}: IUserProps) => void;
+    user: IUserProps | null;
 }
 
 export const AuthContext = createContext({} as AuthContextData);
@@ -38,10 +40,18 @@ function AuthProvider({children}: IAuthProviderProps) {
             unsub();
         }
 
-    }, [])
+    }, []);
+
+    function handleInfoUser({name, email, uid}: IUserProps) {
+        setUser({
+            name: name,
+            email: email,
+            uid: uid
+        })
+    }
 
     return (
-        <AuthContext.Provider value={{signed: !!user, loadingAuth}}> {/* Usar o !! transforma uma variável em booleana */}
+        <AuthContext.Provider value={{signed: !!user, loadingAuth, handleInfoUser, user}}> {/* Usar o !! transforma uma variável em booleana */}
             {children}
         </AuthContext.Provider>
     )
