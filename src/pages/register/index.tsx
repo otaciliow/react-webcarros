@@ -1,7 +1,12 @@
-import { Link } from 'react-router-dom';
+import { useEffect, useContext } from 'react';
+import { AuthContext } from '../../contexts/authContext';
+import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+
+import { auth } from '../../services/firebaseConnection';
+import { createUserWithEmailAndPassword, updateProfile, signOut } from 'firebase/auth';
 
 import logoImg from '../../assets/logo.svg';
 import { Container } from '../../components/container';
@@ -16,14 +21,39 @@ const schema = z.object({
 type formData = z.infer<typeof schema>
 
 export function Register() {
+    const { handleInfoUser } = useContext(AuthContext);
+    const navigate = useNavigate();
 
     const { register, handleSubmit, formState: {errors} } = useForm<formData>({
         resolver: zodResolver(schema),
         mode: "onChange",
     });
 
-    function onSubmit(data: formData) {
-        console.log(data);
+    useEffect(() => {
+        async function handleLogOut() {
+            await signOut(auth);
+        }
+        handleLogOut();
+    }, [])
+
+    async function onSubmit(data: formData) {
+        createUserWithEmailAndPassword(auth, data.email, data.password)
+        .then(async (user) => {
+            await updateProfile(user.user, {
+                displayName: data.name
+            })
+            handleInfoUser({
+                name: data.name,
+                email: data.email,
+                uid: user.user.uid
+            })
+            console.log('Cadastrado com sucesso!');
+            navigate('/dashboard', {replace: true});
+        })
+        .catch((error) => {
+            console.log('Erro ao cadastrar este usuário!');
+            console.log(error);
+        })
     }
     return (
         <Container>
