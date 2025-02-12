@@ -1,9 +1,10 @@
+import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { auth } from '../../services/firebaseConnection';
 
 import logoImg from '../../assets/logo.svg';
@@ -24,6 +25,13 @@ export function Login() {
         resolver: zodResolver(schema),
         mode: "onChange",
     });
+
+    useEffect(() => {
+        async function handleLogOut() {
+            await signOut(auth);
+        }
+        handleLogOut();
+    }, []);
 
     async function onSubmit(data: formData) {
         signInWithEmailAndPassword(auth, data.email, data.password)
