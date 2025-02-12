@@ -42,6 +42,8 @@ export function Login() {
 
                     <button className="bg-zinc-900 w-full rounded-md text-white h-10 font-medium">Acessar</button>
                 </form>
+
+                <Link to="/register" className="underline">Ainda não possui uma conta? Registre-se!</Link>
             </div>
 
         </Container>
