@@ -1,7 +1,10 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../../services/firebaseConnection';
 
 import logoImg from '../../assets/logo.svg';
 import { Container } from '../../components/container';
@@ -15,14 +18,23 @@ const schema = z.object({
 type formData = z.infer<typeof schema>
 
 export function Login() {
+    const navigate = useNavigate()
 
     const { register, handleSubmit, formState: {errors} } = useForm<formData>({
         resolver: zodResolver(schema),
         mode: "onChange",
     });
 
-    function onSubmit(data: formData) {
-        console.log(data);
+    async function onSubmit(data: formData) {
+        signInWithEmailAndPassword(auth, data.email, data.password)
+        .then(() => {
+            console.log("Login com sucesso!");
+            navigate('/dashboard', {replace: true});
+        })
+        .catch(error => {
+            console.log('Erro ao fazer login!');
+            console.log(error)
+        })
     }
     return (
         <Container>
