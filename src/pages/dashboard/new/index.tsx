@@ -1,3 +1,4 @@
+import { ChangeEvent, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -33,6 +34,71 @@ export function New() {
     function onSubmit(data: FormData) {
         console.log(data)
     }
+    
+    // Comentado até que outra alternativa para o Firebase Storage seja encontrada (se tornou pago!)
+    /* async function handleFile(e: ChangeEvent<HTMLInputElement>) {
+        if (e.target.files && e.target.files[0]) {
+            const image = e.target.files[0];
+
+            if (image.type === 'image/jpeg' || image.type === 'image/png') {
+                // await handleUploadImage(image);
+            } else {
+                alert('A imagem deve estar nos formatos JPEG ou PNG!');
+                return;
+            }
+        }
+    }
+
+    interface IImageItemProps {
+        uid: string;
+        name: string;
+        previewUrl: string;
+        url: string;
+    }
+
+    const [carImages, setCarImages] = useState<IImageItemProps[]>([]);
+
+    // const { user } = useContext(AuthContext);
+        async function handleUploadImage(image: File) {
+        // utilizar blibliotecas 'uuid' e '@types/uuid --save-dev'
+        // importar useContext, AuthContext, { z4 as uuidV4 } from 'uuid'
+        if (!user.uid) {
+            return;
+        }
+        
+        const currentUid = user?.uid;
+        const uidImage = uuidV4(); gera um id aleatório
+
+        const uploadref = ref(storage, `images/${currentUid}/${uidImage}`)
+
+        uploadBytes(uploadRef, image)
+        .then((snapshot) => {
+            getDownloadURL(snapshot.ref).then((downloadUrl) => {
+                const imageItem = {
+                    name: uidImage,
+                    uid: currentUid,
+                    previewUrl: URL.createObjectURL(image),
+                    url: downloadUrl,
+                }
+
+                setCarImages((images) => [...images, imageItem]);
+            })
+        })
+
+        async function handleDeleteImage(item: IImageItemProps) {
+            const imagePath = `images/${item.uid}/${item.name}`;
+            const imageRef = ref(storage, imagePath);
+
+            try {
+                await deleteObject(imageRef);
+                setCarsImages(carImages.filter((car) => car.url !=== item.url));
+            }
+            catch(err) {
+                console.log(err)
+            }
+        }
+
+    } */
 
     return (
         <Container>
@@ -43,13 +109,22 @@ export function New() {
                         <FiUpload size={30} color="#000"/>
                     </div>
                     <div className="cursor-pointer">
-                        <input type="file" accept="image/*" className="opacity-0 cursor-pointer" />
+                        <input type="file" accept="image/*" className="opacity-0 cursor-pointer" onChange={handleFile} />
                     </div>
                 </button>
 
+                {/* carImages.map(item => (
+                    <div key={item.name} className="flex w-full h-32 items-center justify-center relative">
+                        <button className="absolute" onClick={handleDeleteImage(item)}>
+                            <FiTrash size={28} color="#fff" />
+                        </button>
+                        <img src={item.previewUrl} className="rounded-lg w-full h-32 object-cover" alt="foto do carro" />
+                    </div>
+                )) */}
+
             </div>
 
-            <div className="w-full bg-white p-3 rounded-lg flex flex-col sm:flex-row items-center gap-2 mt-2 mb-12">
+            <div className="w-full bg-white p-3 rounded-lg flex flex-col sm:flex-row items-center gap-2 mt-2">
                 <form className="w-full" onSubmit={handleSubmit(onSubmit)}>
                     <div className="mb-3">
                         <Input type="text" placeholder="Ex.: Argo" name="name" error={errors.name?.message} register={register} label="Nome do Carro" />
@@ -95,6 +170,7 @@ export function New() {
 
                 </form>
             </div>
+
         </Container>
     )
 }
